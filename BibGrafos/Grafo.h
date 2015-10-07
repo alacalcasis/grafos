@@ -22,7 +22,7 @@ class Grafo {
     
     // Representa grafos con vértices de tipo V.
     // V debe tener el constructor de copias y la sobrecarga de operator=.
-    // Los vértices se identifican con números enteros de 1 a N.
+    // Los vértices se identifican con números enteros de 0 a N-1.
     // N es la cantidad total de vértices que debe registrarse en la primera
     // línea del archivo que se usa para construir las adyacencias.
     
@@ -64,6 +64,10 @@ public:
     // Una estructura <...> por cada vértice en *this.
     string aHil();
 
+    // EFE: retorna las posiciones de los vértices adyacentes a vrt.
+    //      Si vrt > N, el vector resultante estará vacío.
+    vector<int>& obtAdy(int vrt) const;
+    
     /* OBSERVADORES NO BÁSICOS */
 
     // EFE: retorna true si *this es conexo y false en caso contrario.
@@ -92,17 +96,20 @@ private:
         Nodo(const T& v_init) : vrt(v_init) {};
         Nodo(const Nodo& orig) : vrt(orig.vrt), ady(orig.ady) {};
     };
-
+    
+    static vector<int> rsl; // se usa para retornar vectores de int, por ejemplo adyacencias.
     vector< Nodo< V > > vecVrt; // vector de nodos que incluyen vértices
-    int cntVrt; // cantidad de vértices que tendrá el grafo
 };
+
+template < typename V >
+vector<int> Grafo<V>::rsl;
 
 template < typename V >
 Grafo<V>::Grafo(string nmbArc) {
     ifstream archivoLineasEntrada(nmbArc.c_str(), ios::in);
     string linea = ""; // línea que se lee del archivo
     int ind_vrt = 0; // índice de vértice recién leído del archivo
-    cntVrt = 0; 
+    int cntVrt = 0; 
     
     if (!archivoLineasEntrada) { // operador ! sobrecargado
         cerr << "No se pudo abrir el archivo de entrada" << endl;
@@ -113,7 +120,7 @@ Grafo<V>::Grafo(string nmbArc) {
     getline(archivoLineasEntrada, linea); 
     cntVrt = atoi(linea.c_str());
     vecVrt.reserve(cntVrt); // se crea un vector con la capacidad requerida
-    vecVrt.resize(cntVrt); // agrega la cantidad de entradas requeridas
+    vecVrt.resize(cntVrt); // asigna memoria para la cantidad de entradas requeridas
     
     getline(archivoLineasEntrada, linea); // se lee la primera lista de adyacencias
     while (!archivoLineasEntrada.eof()) {
@@ -137,7 +144,7 @@ Grafo<V>::Grafo(string nmbArc) {
 }
 
 template < typename V >
-Grafo<V>::Grafo(const Grafo& orig):vecVrt(orig.vecVrt),cntVrt(orig.cntVrt) {
+Grafo<V>::Grafo(const Grafo& orig):vecVrt(orig.vecVrt) {
 }
 
 template < typename V >
@@ -153,7 +160,7 @@ Grafo<V>::~Grafo() {
 
 template < typename V >
 bool Grafo<V>::xstVrt(int x) {
-    return ((1 <= x)&&(x <= cntVrt));
+    return ((0 <= x)&&(x <= vecVrt.size() - 1));
 }
 
 template < typename V >
@@ -165,25 +172,31 @@ bool Grafo<V>::xstAdy(int vrtO, int vrtD) {
 template < typename V >
 long Grafo<V>::obtTotAdy() {
     long rsl = 0;
-    for(int i = 0; i < cntVrt; i++) rsl = rsl + vecVrt[i].ady.size();
+    for(int i = 0; i < vecVrt.size(); i++) rsl = rsl + vecVrt[i].ady.size();
     return rsl/2;
 }
 
 template < typename V >
 long Grafo<V>::obtTotVrt() {
-    return cntVrt;
+    return vecVrt.size();
 }
 
 template < typename V >
 string Grafo<V>::aHil() {
     stringstream salida; // flujo de salida de datos
-    for(int i = 0; i < cntVrt; i++){
+    for(int i = 0; i < vecVrt.size(); i++){
         for(vector< int >::const_iterator itr = vecVrt[i].ady.begin();
                 itr != vecVrt[i].ady.end(); itr++)
             salida << (*itr) << ',';
         salida << endl;
     }
     return salida.str();
+}
+
+template < typename V >
+vector<int>& Grafo<V>::obtAdy(int vrt) const{
+    rsl = vecVrt[++vrt].ady;
+    return rsl;
 }
 
 /* OBSERVADORES NO BÁSICOS */
@@ -195,7 +208,16 @@ bool Grafo<V>::conexo() {
 
 template < typename V >
 bool Grafo<V>::ciclos() {
-
+    bool rsl = false;
+    // Primero se busca algún vértice que sea autoadyacente.
+    int i,j;
+    while ((i < vecVrt.size()) && !rsl) {
+        while ((j < vecVrt[i].ady.size()) && !rsl)
+            if (vecVrt[i] == vecVrt[j])
+                rsl = true;
+    } // o usar un find
+    // Si no se encuentra ningún vértice autoadyacente, se buscan ciclos mayores.
+    return rsl;
 }
 
 /* MODIFICADORES */
