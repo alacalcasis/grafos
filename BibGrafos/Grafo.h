@@ -9,12 +9,13 @@
 #define	GRAFO_H
 
 #include <stdlib.h>
-
 #include <vector>
+#include <queue>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 template < typename V >
@@ -48,21 +49,21 @@ public:
     /* OBSERVADORES BÁSICOS */
 
     // EFE: retorna true si el vértice #x existe en *this y false en caso contrario.
-    bool xstVrt(int x);
+    bool xstVrt(int x) const;
 
     // EFE: retorna true si existe la adyacencia (vrtO, vrtD).
-    bool xstAdy(int vrtO, int vrtD);
+    bool xstAdy(int vrtO, int vrtD) const;
 
     // EFE: retorna la cantidad total de vértices en *this.
-    long obtTotVrt();
+    long obtTotVrt() const;
 
     // EFE: retorna la cantidad total de adyacencias en *this.
-    long obtTotAdy();
+    long obtTotAdy() const;
 
     // EFE: retorna una hilera que representa a *this.
     // {<#vrt-ady11,...#vrt-ady1i>, <#vrt-ady21>...<#vrt-ady2j>...<#vrt-adyN1,#vrt-adyNk>}
     // Una estructura <...> por cada vértice en *this.
-    string aHil();
+    string aHil() const;
 
     // EFE: retorna las posiciones de los vértices adyacentes a vrt.
     //      Si vrt > N, el vector resultante estará vacío.
@@ -71,10 +72,11 @@ public:
     /* OBSERVADORES NO BÁSICOS */
 
     // EFE: retorna true si *this es conexo y false en caso contrario.
-    bool conexo();
+    bool conexo() const;
 
-    // EFE: retorna true si *this tiene al menos un ciclo y false en caso contrario.
-    bool ciclos();
+    // EFE: retorna true si *this tiene al menos un ciclo que inicia en x y 
+    //      false en caso contrario.
+    bool ciclos(int x, string& hsal) const;
 
     /* MODIFICADORES */
     
@@ -159,30 +161,30 @@ Grafo<V>::~Grafo() {
 /* OBSERVADORES BÁSICOS */
 
 template < typename V >
-bool Grafo<V>::xstVrt(int x) {
+bool Grafo<V>::xstVrt(int x) const {
     return ((0 <= x)&&(x <= vecVrt.size() - 1));
 }
 
 template < typename V >
-bool Grafo<V>::xstAdy(int vrtO, int vrtD) {
+bool Grafo<V>::xstAdy(int vrtO, int vrtD) const {
     return ((find(vecVrt[vrtO].ady.begin(),vecVrt[vrtO].ady.end(),vrtD) != vecVrt[vrtO].ady.end())&&
             (find(vecVrt[vrtD].ady.begin(),vecVrt[vrtD].ady.end(),vrtO) != vecVrt[vrtD].ady.end()));
 }
 
 template < typename V >
-long Grafo<V>::obtTotAdy() {
+long Grafo<V>::obtTotAdy() const {
     long rsl = 0;
     for(int i = 0; i < vecVrt.size(); i++) rsl = rsl + vecVrt[i].ady.size();
     return rsl/2;
 }
 
 template < typename V >
-long Grafo<V>::obtTotVrt() {
+long Grafo<V>::obtTotVrt() const {
     return vecVrt.size();
 }
 
 template < typename V >
-string Grafo<V>::aHil() {
+string Grafo<V>::aHil() const {
     stringstream salida; // flujo de salida de datos
     for(int i = 0; i < vecVrt.size(); i++){
         for(vector< int >::const_iterator itr = vecVrt[i].ady.begin();
@@ -202,21 +204,48 @@ vector<int>& Grafo<V>::obtAdy(int vrt) const{
 /* OBSERVADORES NO BÁSICOS */
 
 template < typename V >
-bool Grafo<V>::conexo() {
+bool Grafo<V>::conexo() const {
 
 }
 
 template < typename V >
-bool Grafo<V>::ciclos() {
+bool Grafo<V>::ciclos(int origen, string& hsal) const {
+    stringstream salida;
+    salida << origen;
     bool rsl = false;
     // Primero se busca algún vértice que sea autoadyacente.
-    int i,j;
+    int i = 0,j = 0;
     while ((i < vecVrt.size()) && !rsl) {
-        while ((j < vecVrt[i].ady.size()) && !rsl)
-            if (vecVrt[i] == vecVrt[j])
+        j = 0;
+        while ((j < vecVrt[i].ady.size()) && !rsl){
+            if (i == vecVrt[i].ady[j]){
                 rsl = true;
+                salida << vecVrt[i].ady[j];
+            }
+            j++;
+        }
+        i++;
     } // o usar un find
-    // Si no se encuentra ningún vértice autoadyacente, se buscan ciclos mayores.
+
+    if (!rsl) { // Se buscan ciclos mayores.
+        vector<int> marcados; // vector de nodos marcados
+        queue<int> cola; // cola para el recorrido por anchura
+        cola.push(origen); // se encola el origen
+        while (!cola.empty() && !rsl){
+            int nvo_mrc = cola.front();
+            marcados.push_back(nvo_mrc);
+            salida << nvo_mrc;
+            cola.pop();
+            int i = 0;
+            while((i < vecVrt[nvo_mrc].ady.size()) && !rsl){
+                if (find(marcados.begin(),marcados.end(),vecVrt[nvo_mrc].ady[i]) != marcados.end())
+                    rsl = true;
+                else cola.push(vecVrt[nvo_mrc].ady[i]);
+                i++;
+            }
+        }
+    }
+    hsal = salida.str();
     return rsl;
 }
 
