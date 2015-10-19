@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <queue>
+#include <stack>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -78,6 +79,8 @@ public:
     //      false en caso contrario.
     bool ciclos(int x, string& hsal) const;
 
+    vector< vector<int> >& rutasEntre(int vO, int vD) const;
+    
     /* MODIFICADORES */
     
     // REQ: 1 <= ind_vrt <= N.
@@ -99,12 +102,18 @@ private:
         Nodo(const Nodo& orig) : vrt(orig.vrt), ady(orig.ady) {};
     };
     
-    static vector<int> rsl; // se usa para retornar vectores de int, por ejemplo adyacencias.
+    typedef vector< Nodo< V > > T_vecNdo;
     vector< Nodo< V > > vecVrt; // vector de nodos que incluyen vértices
+    
+    static vector<int> rsl; // se usa para retornar vectores de int, por ejemplo adyacencias.
+    static vector< vector< int > > rsl2;
 };
 
 template < typename V >
 vector<int> Grafo<V>::rsl;
+
+template < typename V >
+vector< vector<int> > Grafo<V>::rsl2;
 
 template < typename V >
 Grafo<V>::Grafo(string nmbArc) {
@@ -248,6 +257,34 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
     hsal = salida.str();
     return rsl;
 }
+
+template < typename V >
+vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const{
+    vector< int > rutaEnCnst;
+    stack< int > pila;
+    pila.push(vO);
+    while(!pila.empty()){
+        int vrt = pila.top();
+        rutaEnCnst.push_back(vrt);
+        pila.pop();
+        if (vrt == vD){ // se encontró ruta nueva
+            vector< int > ruta = rutaEnCnst;
+            reverse(ruta.begin(),ruta.end());
+            rsl2.push_back(ruta);
+            rutaEnCnst.pop_back(); // se elimina vD para seguir construyendo rutas
+            while (find(vecVrt.at(rutaEnCnst.back()).ady.begin(),
+                     vecVrt.at(rutaEnCnst.back()).ady.end(),
+                     pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
+        } else { // colocar en la pila los adyacentes que no forman ciclos en la ruta
+            for( typename T_vecNdo::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
+                   itr != vecVrt.at(pila.top()).ady.end();itr++)
+                if (find(rutaEnCnst.begin(), rutaEnCnst.end(),*itr) == rutaEnCnst.end())
+                    pila.push(*itr);
+        }
+    }
+    return rsl2;
+}
+
 
 /* MODIFICADORES */
 
