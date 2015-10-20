@@ -220,7 +220,6 @@ bool Grafo<V>::conexo() const {
 template < typename V >
 bool Grafo<V>::ciclos(int origen, string& hsal) const {
     stringstream salida;
-    salida << origen;
     bool rsl = false;
     // Primero se busca algún vértice que sea autoadyacente.
     int i = 0,j = 0;
@@ -247,9 +246,13 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
             cola.pop();
             int i = 0;
             while((i < vecVrt[nvo_mrc].ady.size()) && !rsl){
-                if (find(marcados.begin(),marcados.end(),vecVrt[nvo_mrc].ady[i]) != marcados.end())
-                    rsl = true;
-                else cola.push(vecVrt[nvo_mrc].ady[i]);
+                // se busca entre los marcados al iésimo adyacente de nvo_mrc:
+                vector< int >::const_iterator itr_rsl1 = find(marcados.begin(),marcados.end(),vecVrt[nvo_mrc].ady.at(i));
+                
+//                if ( != marcados.end() &&
+//                    find(vecVrt[i].ady.begin(),vecVrt[i].ady.end(),vecVrt[i].ady[nvo_mrc]) == vecVrt[i].ady.end())
+//                    rsl = true;
+//                else cola.push(vecVrt[nvo_mrc].ady[i]);
                 i++;
             }
         }
