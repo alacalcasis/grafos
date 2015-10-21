@@ -237,22 +237,21 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
 
     if (!rsl) { // Se buscan ciclos mayores.
         vector<int> marcados; // vector de nodos marcados
-        queue<int> cola; // cola para el recorrido por anchura
-        cola.push(origen); // se encola el origen
-        while (!cola.empty() && !rsl){
-            int nvo_mrc = cola.front();
+        stack<int> pila; // cola para el recorrido por anchura
+        pila.push(origen); // se encola el origen
+        while (!pila.empty() && !rsl){
+            int nvo_mrc = pila.top();
             marcados.push_back(nvo_mrc);
             salida << nvo_mrc;
-            cola.pop();
+            pila.pop();
             int i = 0;
             while((i < vecVrt[nvo_mrc].ady.size()) && !rsl){
                 // se busca entre los marcados al iésimo adyacente de nvo_mrc:
                 vector< int >::const_iterator itr_rsl1 = find(marcados.begin(),marcados.end(),vecVrt[nvo_mrc].ady.at(i));
                 
-//                if ( != marcados.end() &&
-//                    find(vecVrt[i].ady.begin(),vecVrt[i].ady.end(),vecVrt[i].ady[nvo_mrc]) == vecVrt[i].ady.end())
-//                    rsl = true;
-//                else cola.push(vecVrt[nvo_mrc].ady[i]);
+                if ( itr_rsl1 != marcados.end() )
+                  rsl = true;
+                else pila.push(vecVrt[nvo_mrc].ady[i]);
                 i++;
             }
         }
