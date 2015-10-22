@@ -21,13 +21,12 @@ using namespace std;
 
 template < typename V >
 class Grafo {
-    
     // Representa grafos con vértices de tipo V.
     // V debe tener el constructor de copias y la sobrecarga de operator=.
     // Los vértices se identifican con números enteros de 0 a N-1.
     // N es la cantidad total de vértices que debe registrarse en la primera
     // línea del archivo que se usa para construir las adyacencias.
-    
+
 public:
 
     // Construye un grafo a partir de un archivo.
@@ -69,7 +68,7 @@ public:
     // EFE: retorna las posiciones de los vértices adyacentes a vrt.
     //      Si vrt > N, el vector resultante estará vacío.
     vector<int>& obtAdy(int vrt) const;
-    
+
     /* OBSERVADORES NO BÁSICOS */
 
     // EFE: retorna true si *this es conexo y false en caso contrario.
@@ -80,14 +79,14 @@ public:
     bool ciclos(int x, string& hsal) const;
 
     vector< vector<int> >& rutasEntre(int vO, int vD) const;
-    
+
     /* MODIFICADORES */
-    
+
     // REQ: 1 <= ind_vrt <= N.
     // MOD: *this.
     // EFE: agrega el dato "nv" al vértice indicado por "ind_vrt".
     void asgDatoVrt(const V& nv, int ind_vrt);
-    
+
     /* ITERADORES */
 
 private:
@@ -97,14 +96,19 @@ private:
         T vrt;
         vector<int> ady;
 
-        Nodo() {};
-        Nodo(const T& v_init) : vrt(v_init) {};
-        Nodo(const Nodo& orig) : vrt(orig.vrt), ady(orig.ady) {};
+        Nodo() {
+        };
+
+        Nodo(const T& v_init) : vrt(v_init) {
+        };
+
+        Nodo(const Nodo& orig) : vrt(orig.vrt), ady(orig.ady) {
+        };
     };
-    
+
     typedef vector< Nodo< V > > T_vecNdo;
     vector< Nodo< V > > vecVrt; // vector de nodos que incluyen vértices
-    
+
     static vector<int> rsl; // se usa para retornar vectores de int, por ejemplo adyacencias.
     static vector< vector< int > > rsl2;
 };
@@ -120,19 +124,19 @@ Grafo<V>::Grafo(string nmbArc) {
     ifstream archivoLineasEntrada(nmbArc.c_str(), ios::in);
     string linea = ""; // línea que se lee del archivo
     int ind_vrt = 0; // índice de vértice recién leído del archivo
-    int cntVrt = 0; 
-    
+    int cntVrt = 0;
+
     if (!archivoLineasEntrada) { // operador ! sobrecargado
         cerr << "No se pudo abrir el archivo de entrada" << endl;
         exit(1);
     }
-    
+
     // se lee la primera línea que contiene la cantidad de vértices
-    getline(archivoLineasEntrada, linea); 
+    getline(archivoLineasEntrada, linea);
     cntVrt = atoi(linea.c_str());
     vecVrt.reserve(cntVrt); // se crea un vector con la capacidad requerida
     vecVrt.resize(cntVrt); // asigna memoria para la cantidad de entradas requeridas
-    
+
     getline(archivoLineasEntrada, linea); // se lee la primera lista de adyacencias
     while (!archivoLineasEntrada.eof()) {
         int i = 0;
@@ -155,7 +159,7 @@ Grafo<V>::Grafo(string nmbArc) {
 }
 
 template < typename V >
-Grafo<V>::Grafo(const Grafo& orig):vecVrt(orig.vecVrt) {
+Grafo<V>::Grafo(const Grafo& orig) : vecVrt(orig.vecVrt) {
 }
 
 template < typename V >
@@ -176,15 +180,15 @@ bool Grafo<V>::xstVrt(int x) const {
 
 template < typename V >
 bool Grafo<V>::xstAdy(int vrtO, int vrtD) const {
-    return ((find(vecVrt[vrtO].ady.begin(),vecVrt[vrtO].ady.end(),vrtD) != vecVrt[vrtO].ady.end())&&
-            (find(vecVrt[vrtD].ady.begin(),vecVrt[vrtD].ady.end(),vrtO) != vecVrt[vrtD].ady.end()));
+    return ((find(vecVrt[vrtO].ady.begin(), vecVrt[vrtO].ady.end(), vrtD) != vecVrt[vrtO].ady.end())&&
+            (find(vecVrt[vrtD].ady.begin(), vecVrt[vrtD].ady.end(), vrtO) != vecVrt[vrtD].ady.end()));
 }
 
 template < typename V >
 long Grafo<V>::obtTotAdy() const {
     long rsl = 0;
-    for(int i = 0; i < vecVrt.size(); i++) rsl = rsl + vecVrt[i].ady.size();
-    return rsl/2;
+    for (int i = 0; i < vecVrt.size(); i++) rsl = rsl + vecVrt[i].ady.size();
+    return rsl / 2;
 }
 
 template < typename V >
@@ -195,8 +199,8 @@ long Grafo<V>::obtTotVrt() const {
 template < typename V >
 string Grafo<V>::aHil() const {
     stringstream salida; // flujo de salida de datos
-    for(int i = 0; i < vecVrt.size(); i++){
-        for(vector< int >::const_iterator itr = vecVrt[i].ady.begin();
+    for (int i = 0; i < vecVrt.size(); i++) {
+        for (vector< int >::const_iterator itr = vecVrt[i].ady.begin();
                 itr != vecVrt[i].ady.end(); itr++)
             salida << (*itr) << ',';
         salida << endl;
@@ -205,7 +209,7 @@ string Grafo<V>::aHil() const {
 }
 
 template < typename V >
-vector<int>& Grafo<V>::obtAdy(int vrt) const{
+vector<int>& Grafo<V>::obtAdy(int vrt) const {
     rsl = vecVrt[++vrt].ady;
     return rsl;
 }
@@ -222,11 +226,11 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
     stringstream salida;
     bool rsl = false;
     // Primero se busca algún vértice que sea autoadyacente.
-    int i = 0,j = 0;
+    int i = 0, j = 0;
     while ((i < vecVrt.size()) && !rsl) {
         j = 0;
-        while ((j < vecVrt[i].ady.size()) && !rsl){
-            if (i == vecVrt[i].ady[j]){
+        while ((j < vecVrt[i].ady.size()) && !rsl) {
+            if (i == vecVrt[i].ady[j]) {
                 rsl = true;
                 salida << vecVrt[i].ady[j];
             }
@@ -239,19 +243,20 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
         vector<int> marcados; // vector de nodos marcados
         stack<int> pila; // cola para el recorrido por anchura
         pila.push(origen); // se encola el origen
-        while (!pila.empty() && !rsl){
+        while (!pila.empty() && !rsl) {
             int nvo_mrc = pila.top();
             marcados.push_back(nvo_mrc);
             salida << nvo_mrc;
             pila.pop();
             int i = 0;
-            while((i < vecVrt[nvo_mrc].ady.size()) && !rsl){
+            while ((i < vecVrt[nvo_mrc].ady.size()) && !rsl) {
                 // se busca entre los marcados al iésimo adyacente de nvo_mrc:
-                vector< int >::const_iterator itr_rsl1 = find(marcados.begin(),marcados.end(),vecVrt[nvo_mrc].ady.at(i));
-                
-                if ( itr_rsl1 != marcados.end() )
-                  rsl = true;
-                else pila.push(vecVrt[nvo_mrc].ady[i]);
+                if (nvo_mrc != vecVrt[nvo_mrc].ady.at(i)) {
+                    vector< int >::const_iterator itr_rsl1 = find(marcados.begin(), marcados.end(), vecVrt[nvo_mrc].ady.at(i));
+                    if (itr_rsl1 != marcados.end())
+                        rsl = true;
+                    else pila.push(vecVrt[nvo_mrc].ady[i]);
+                }
                 i++;
             }
         }
@@ -261,32 +266,31 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
 }
 
 template < typename V >
-vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const{
+vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const {
     vector< int > rutaEnCnst;
     stack< int > pila;
     pila.push(vO);
-    while(!pila.empty()){
+    while (!pila.empty()) {
         int vrt = pila.top();
         rutaEnCnst.push_back(vrt);
         pila.pop();
-        if (vrt == vD){ // se encontró ruta nueva
+        if (vrt == vD) { // se encontró ruta nueva
             vector< int > ruta = rutaEnCnst;
-            reverse(ruta.begin(),ruta.end());
+            reverse(ruta.begin(), ruta.end());
             rsl2.push_back(ruta);
             rutaEnCnst.pop_back(); // se elimina vD para seguir construyendo rutas
             while (find(vecVrt.at(rutaEnCnst.back()).ady.begin(),
-                     vecVrt.at(rutaEnCnst.back()).ady.end(),
-                     pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
+                    vecVrt.at(rutaEnCnst.back()).ady.end(),
+                    pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
         } else { // colocar en la pila los adyacentes que no forman ciclos en la ruta
-            for( typename T_vecNdo::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
-                   itr != vecVrt.at(pila.top()).ady.end();itr++)
-                if (find(rutaEnCnst.begin(), rutaEnCnst.end(),*itr) == rutaEnCnst.end())
+            for (typename T_vecNdo::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
+                    itr != vecVrt.at(pila.top()).ady.end(); itr++)
+                if (find(rutaEnCnst.begin(), rutaEnCnst.end(), *itr) == rutaEnCnst.end())
                     pila.push(*itr);
         }
     }
     return rsl2;
 }
-
 
 /* MODIFICADORES */
 
