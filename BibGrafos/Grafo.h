@@ -241,27 +241,26 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
 
     if (!rsl) { // Se buscan ciclos mayores.
         vector<int> marcados; // vector de nodos marcados
-        stack<int> pila; // cola para el recorrido por anchura
-        pila.push(origen); // se encola el origen
+        stack<int> pila; // pila para el recorrido por profundidad
+        pila.push(origen); // se apila el origen
         while (!pila.empty() && !rsl) {
             int nvo_mrc = pila.top();
-            marcados.push_back(nvo_mrc);
-            salida << nvo_mrc;
             pila.pop();
-            int i = 0;
-            while ((i < vecVrt[nvo_mrc].ady.size()) && !rsl) {
-                // se busca entre los marcados al iésimo adyacente de nvo_mrc:
-                if (nvo_mrc != vecVrt[nvo_mrc].ady.at(i)) {
-                    vector< int >::const_iterator itr_rsl1 = find(marcados.begin(), marcados.end(), vecVrt[nvo_mrc].ady.at(i));
-                    if (itr_rsl1 != marcados.end())
-                        rsl = true;
-                    else pila.push(vecVrt[nvo_mrc].ady[i]);
-                }
-                i++;
+            // se sacan de la ruta en construcción los vértices que ya se intentaron
+            // porque ya no tienen adyacentes pendientes de recorrer en la pila
+            if (!pila.empty())
+                while (find(vecVrt.at(marcados.back()).ady.begin(),
+                    vecVrt.at(marcados.back()).ady.end(),
+                    pila.top()) == vecVrt.at(marcados.back()).ady.end()) marcados.pop_back();
+            if (find(marcados.begin(), marcados.end(), nvo_mrc) != marcados.end())
+                rsl = true;
+            else { // nvo_mrc no forma un ciclo, hay que seguir buscando
+                marcados.push_back(nvo_mrc); // se agrega para intentar hallar un ciclo a partir de ahí
+                for (int i = 0; i < vecVrt[nvo_mrc].ady.size(); i++)
+                    pila.push(vecVrt[nvo_mrc].ady.at(i)); // se agregan los adyacentes al nvo_mrc
             }
         }
     }
-    hsal = salida.str();
     return rsl;
 }
 
@@ -279,6 +278,7 @@ vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const {
             reverse(ruta.begin(), ruta.end());
             rsl2.push_back(ruta);
             rutaEnCnst.pop_back(); // se elimina vD para seguir construyendo rutas
+            // se sacan de la ruta en construcción los vértices que ya se intentaron
             while (find(vecVrt.at(rutaEnCnst.back()).ady.begin(),
                     vecVrt.at(rutaEnCnst.back()).ady.end(),
                     pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
