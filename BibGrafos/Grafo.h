@@ -242,16 +242,18 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
         i++;
     }
 
-    // La siguiente matriz de adyacencia se usa para marcar las aristas recorridas
-    bool matAdy[vecVrt.size()][vecVrt.size()];
-    for (int i = 0; i < vecVrt.size(); i++)
-        for (int j = 0; j < vecVrt.size(); j++)
-            matAdy[i][j] = false;
-
     if (!rsl) { // Se buscan ciclos mayores.
+        // La siguiente matriz de adyacencia se usa para marcar las aristas recorridas
+        int vs = vecVrt.size();
+        bool *matAdy = new bool[vs * vs];
+        for (int i = 0; i < vs; i++)
+            for (int j = 0; j < vs; j++)
+                matAdy[i * vs + j] = false;
+
         vector<int> marcados; // vector de nodos marcados
         stack<int> pila; // pila para el recorrido por profundidad
         pila.push(origen); // se apila el origen
+
         while (!pila.empty() && !rsl) {
             // se sacan del ciclo en construcción los vértices que ya se intentaron
             // porque ya no tienen adyacentes pendientes de recorrer en la pila
@@ -260,19 +262,26 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
                         vecVrt.at(marcados.back()).ady.end(),
                         pila.top()) == vecVrt.at(marcados.back()).ady.end()) marcados.pop_back();
 
-            }            
-            int nvo_mrc = pila.top();
+            }
+            int nvoMrc = pila.top();
             pila.pop();
-            marcados.push_back(nvo_mrc); // se agrega para intentar hallar un ciclo a partir de ahí
-            for (int i = 0; i < vecVrt[nvo_mrc].ady.size(); i++) {
-                    if (!matAdy[nvo_mrc][vecVrt[nvo_mrc].ady.at(i)]) {
-                        int vAdy = vecVrt[nvo_mrc].ady.at(i);
-                        pila.push(vecVrt[nvo_mrc].ady.at(i)); // se agregan los adyacentes al nvo_mrc
-                        matAdy[nvo_mrc][vecVrt[nvo_mrc].ady.at(i)] = true;
-                        matAdy[vecVrt[nvo_mrc].ady.at(i)][nvo_mrc] = true;
-                    } else rsl = true;
+            // se agrega para intentar hallar un ciclo a partir de nvoMrc
+            marcados.push_back(nvoMrc);
+            for (int i = 0; i < vecVrt[nvoMrc].ady.size(); i++) {
+                int vAdy = vecVrt[nvoMrc].ady.at(i);
+                if ((vAdy == origen)&& (marcados[marcados.size() - 2] != origen)) {
+                    rsl = true;
+                    break;
+                } else
+                    // se agregan a la pila los adyacentes a nvoMrc cuyas aristas no han sido marcadas
+                    if (!matAdy[nvoMrc * vs + vAdy]) {
+                    pila.push(vAdy);
+                    matAdy[nvoMrc * vs + vAdy] = true;
+                    matAdy[vAdy * vs + nvoMrc] = true;
                 }
+            }
         }
+        delete[] matAdy;
     }
     return rsl;
 }
