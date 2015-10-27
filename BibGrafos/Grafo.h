@@ -111,6 +111,9 @@ private:
 
     static vector<int> rsl; // se usa para retornar vectores de int, por ejemplo adyacencias.
     static vector< vector< int > > rsl2;
+
+    // misceláneos:
+    static string vecAhil(vector<int> vecEnt);
 };
 
 template < typename V >
@@ -237,28 +240,38 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
             j++;
         }
         i++;
-    } // o usar un find
+    }
+
+    // La siguiente matriz de adyacencia se usa para marcar las aristas recorridas
+    bool matAdy[vecVrt.size()][vecVrt.size()];
+    for (int i = 0; i < vecVrt.size(); i++)
+        for (int j = 0; j < vecVrt.size(); j++)
+            matAdy[i][j] = false;
 
     if (!rsl) { // Se buscan ciclos mayores.
         vector<int> marcados; // vector de nodos marcados
         stack<int> pila; // pila para el recorrido por profundidad
         pila.push(origen); // se apila el origen
         while (!pila.empty() && !rsl) {
+            // se sacan del ciclo en construcción los vértices que ya se intentaron
+            // porque ya no tienen adyacentes pendientes de recorrer en la pila
+            if (!pila.empty() && !marcados.empty()) {
+                while (find(vecVrt.at(marcados.back()).ady.begin(),
+                        vecVrt.at(marcados.back()).ady.end(),
+                        pila.top()) == vecVrt.at(marcados.back()).ady.end()) marcados.pop_back();
+
+            }            
             int nvo_mrc = pila.top();
             pila.pop();
-            // se sacan de la ruta en construcción los vértices que ya se intentaron
-            // porque ya no tienen adyacentes pendientes de recorrer en la pila
-            if (!pila.empty())
-                while (find(vecVrt.at(marcados.back()).ady.begin(),
-                    vecVrt.at(marcados.back()).ady.end(),
-                    pila.top()) == vecVrt.at(marcados.back()).ady.end()) marcados.pop_back();
-            if (find(marcados.begin(), marcados.end(), nvo_mrc) != marcados.end())
-                rsl = true;
-            else { // nvo_mrc no forma un ciclo, hay que seguir buscando
-                marcados.push_back(nvo_mrc); // se agrega para intentar hallar un ciclo a partir de ahí
-                for (int i = 0; i < vecVrt[nvo_mrc].ady.size(); i++)
-                    pila.push(vecVrt[nvo_mrc].ady.at(i)); // se agregan los adyacentes al nvo_mrc
-            }
+            marcados.push_back(nvo_mrc); // se agrega para intentar hallar un ciclo a partir de ahí
+            for (int i = 0; i < vecVrt[nvo_mrc].ady.size(); i++) {
+                    if (!matAdy[nvo_mrc][vecVrt[nvo_mrc].ady.at(i)]) {
+                        int vAdy = vecVrt[nvo_mrc].ady.at(i);
+                        pila.push(vecVrt[nvo_mrc].ady.at(i)); // se agregan los adyacentes al nvo_mrc
+                        matAdy[nvo_mrc][vecVrt[nvo_mrc].ady.at(i)] = true;
+                        matAdy[vecVrt[nvo_mrc].ady.at(i)][nvo_mrc] = true;
+                    } else rsl = true;
+                }
         }
     }
     return rsl;
@@ -301,5 +314,13 @@ void Grafo<V>::asgDatoVrt(const V& nv, int ind_vrt) {
 
 /* ITERADORES */
 
+/* misceláneos: */
+template < typename V >
+string Grafo<V>::vecAhil(vector<int> vecEnt) {
+    stringstream salida;
+    for (int i = 0; i < vecEnt.size(); i++)
+        salida << "," << vecEnt[i];
+    return salida.str();
+}
 #endif	/* GRAFO_H */
 
