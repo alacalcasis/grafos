@@ -14,7 +14,8 @@ using namespace std;
  * 
  */
 int main(int argc, char** argv) {
-    string nombre_archivo = "grafoMuyMuyPeqConCiclos2.txt";
+    //string nombre_archivo = "grafoMuyMuyPeqConCiclos3.txt";
+    string nombre_archivo = "grafoMuyPeq.txt";
     string salida;
     Grafo<int> grfInt(nombre_archivo);
     cout << grfInt.aHil() << endl;

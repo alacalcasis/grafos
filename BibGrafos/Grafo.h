@@ -269,7 +269,8 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
             marcados.push_back(nvoMrc);
             for (int i = 0; i < vecVrt[nvoMrc].ady.size(); i++) {
                 int vAdy = vecVrt[nvoMrc].ady.at(i);
-                if ((vAdy == origen)&& (marcados[marcados.size() - 2] != origen)) {
+                /*if ((vAdy == origen)&& (marcados[marcados.size() - 2] != origen))*/
+                 if (find(marcados.begin(),marcados.end(),vAdy) != marcados.end() && (marcados[marcados.size() - 2] != vAdy)){
                     rsl = true;
                     break;
                 } else
