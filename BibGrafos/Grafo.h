@@ -306,7 +306,7 @@ vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const {
                     vecVrt.at(rutaEnCnst.back()).ady.end(),
                     pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
         } else { // colocar en la pila los adyacentes que no forman ciclos en la ruta
-            for (typename T_vecNdo::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
+            for (typename vector< Nodo< V > >::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
                     itr != vecVrt.at(pila.top()).ady.end(); itr++)
                 if (find(rutaEnCnst.begin(), rutaEnCnst.end(), *itr) == rutaEnCnst.end())
                     pila.push(*itr);
