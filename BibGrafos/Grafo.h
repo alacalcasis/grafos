@@ -289,6 +289,7 @@ bool Grafo<V>::ciclos(int origen, string& hsal) const {
 
 template < typename V >
 vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const {
+    rsl2.clear(); // se limpia para que no guarde resultados anteriores
     vector< int > rutaEnCnst;
     stack< int > pila;
     pila.push(vO);
@@ -298,16 +299,16 @@ vector< vector<int> >& Grafo<V>::rutasEntre(int vO, int vD) const {
         pila.pop();
         if (vrt == vD) { // se encontró ruta nueva
             vector< int > ruta = rutaEnCnst;
-            reverse(ruta.begin(), ruta.end());
+            //reverse(ruta.begin(), ruta.end());
             rsl2.push_back(ruta);
             rutaEnCnst.pop_back(); // se elimina vD para seguir construyendo rutas
             // se sacan de la ruta en construcción los vértices que ya se intentaron
-            while (find(vecVrt.at(rutaEnCnst.back()).ady.begin(),
+            while (!pila.empty() && find(vecVrt.at(rutaEnCnst.back()).ady.begin(),
                     vecVrt.at(rutaEnCnst.back()).ady.end(),
                     pila.top()) == vecVrt.at(rutaEnCnst.back()).ady.end()) rutaEnCnst.pop_back();
         } else { // colocar en la pila los adyacentes que no forman ciclos en la ruta
-            for (typename vector< Nodo< V > >::const_iterator itr = vecVrt.at(pila.top()).ady.begin();
-                    itr != vecVrt.at(pila.top()).ady.end(); itr++)
+            for (typename vector< int >::const_iterator itr = vecVrt.at(vrt).ady.begin();
+                    itr != vecVrt.at(vrt).ady.end(); itr++)
                 if (find(rutaEnCnst.begin(), rutaEnCnst.end(), *itr) == rutaEnCnst.end())
                     pila.push(*itr);
         }
