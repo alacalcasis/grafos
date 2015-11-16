@@ -8,10 +8,7 @@
 #ifndef ANCHURACONST_H
 #define	ANCHURACONST_H
 
-// declaración adelantada de plantilla Digrafo_gnr para evitar 
-// inclusión mutua entre Digrafo_gnr y AnchuraConst.
-template< typename T >
-class Digrafo_gnr;
+#include "Digrafo_gnr.h" // sustituye a la declaración adelantada.
 
 template< typename T >
 class AnchuraConst {

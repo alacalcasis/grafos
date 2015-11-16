@@ -10,6 +10,7 @@
 using namespace std;
 
 #include "Digrafo_gnr.h"
+#include "AnchuraConst.h"
 /*
  * 
  */

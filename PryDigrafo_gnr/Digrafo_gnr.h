@@ -13,14 +13,17 @@
 #include <map>
 using namespace std;
 
-#include "AnchuraConst.h"
+template < typename T > // sustituye al #include
+class AnchuraConst;
 
 template < typename T >
 class Digrafo_gnr {
     // Representa un digrafo cuyos vértices son de tipo T.
     // Supuestos sobre T:
     // #1 Tiene un constructor de copias.
+    // #2 Sobrecarga el operator=(...) para asignación.
     
+    friend class AnchuraConst< T >;
 public:
     /* CONSTRUCTORES */
     
