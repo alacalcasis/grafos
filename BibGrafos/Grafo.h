@@ -20,7 +20,12 @@
 using namespace std;
 
 template < typename V >
+class GrafoItrAP_c;
+
+template < typename V >
 class Grafo {
+    friend class GrafoItrAP_c< V >;
+    
     // Representa grafos con vértices de tipo V.
     // V debe tener el constructor de copias y la sobrecarga de operator=.
     // Los vértices se identifican con números enteros de 0 a N-1.
@@ -88,7 +93,18 @@ public:
     void asgDatoVrt(const V& nv, int ind_vrt);
 
     /* ITERADORES */
-
+    
+    typedef GrafoItrAP_c< V > const_iterator_ap;
+    
+    // EFE: construye un iterador anchura-primero constante que inicia su recorrido al azar.
+    const_iterator_ap& begin();
+    
+    // EFE: construye un iterador anchura-primero constante que inicia su recorrido a partir de vO.
+    const_iterator_ap& begin(int vO);
+    
+    // EFE: construye un iterador anchura-primero constante que apunta al final del recorrido.
+    const_iterator_ap& end();
+    
 private:
 
     template < typename T >
@@ -106,6 +122,7 @@ private:
         };
     };
 
+    Grafo(); // sólo para ser usado por constructores de GrafoItrAO_c.
     typedef vector< Nodo< V > > T_vecNdo;
     vector< Nodo< V > > vecVrt; // vector de nodos que incluyen vértices
 
@@ -114,6 +131,8 @@ private:
 
     // misceláneos:
     static string vecAhil(vector<int> vecEnt);
+    static GrafoItrAP_c< V > itr_begin;
+    static GrafoItrAP_c< V > itr_end;
 };
 
 template < typename V >
@@ -121,6 +140,16 @@ vector<int> Grafo<V>::rsl;
 
 template < typename V >
 vector< vector<int> > Grafo<V>::rsl2;
+
+template < typename V >
+GrafoItrAP_c< V > Grafo<V>::itr_begin;
+
+template < typename V >
+GrafoItrAP_c< V > Grafo<V>::itr_end;
+
+template < typename V >
+Grafo<V>::Grafo(){
+}
 
 template < typename V >
 Grafo<V>::Grafo(string nmbArc) {
@@ -324,6 +353,27 @@ void Grafo<V>::asgDatoVrt(const V& nv, int ind_vrt) {
 }
 
 /* ITERADORES */
+
+template < typename V >
+GrafoItrAP_c< V >& Grafo<V>::begin(){
+    itr_begin.clear();
+    itr_begin.asgGrafo(*this);
+    itr_begin.asgOrigenAlAzar();
+    return itr_begin;
+}
+
+template < typename V >
+GrafoItrAP_c< V >& Grafo<V>::begin(int vO){
+    itr_begin.clear();
+    itr_begin.asgGrafo(*this);
+    itr_begin.asgOrigen(vO);
+    return itr_begin;
+}
+
+template < typename V >
+GrafoItrAP_c< V >& Grafo<V>::end(){
+    itr_end.fin = true;
+}
 
 /* misceláneos: */
 template < typename V >
