@@ -373,6 +373,7 @@ GrafoItrAP_c< V >& Grafo<V>::begin(int vO){
 template < typename V >
 GrafoItrAP_c< V >& Grafo<V>::end(){
     itr_end.fin = true;
+    return itr_end;
 }
 
 /* misceláneos: */

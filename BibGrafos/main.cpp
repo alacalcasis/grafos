@@ -51,9 +51,15 @@ int main(int argc, char** argv) {
     Grafo< int > grf("grafoMuyPeq.txt");
     int vO = 0;
     cout << "Digite vértice para iniciar recorrido anchura-primero: ";
-    cin >> vO;
+    cin >> vO; cout << endl;
     cout << "A continuación un recorrido anchura-primero desde: " << vO << endl;
     for (Grafo< int >::const_iterator_ap itr = grf.begin(vO);
+            itr != grf.end(); ++itr)
+        cout << *itr << ',';
+    cout << endl;
+    
+    cout << "A continuación un recorrido anchura-primero con inicio al azar" << endl;
+    for (Grafo< int >::const_iterator_ap itr = grf.begin();
             itr != grf.end(); ++itr)
         cout << *itr << ',';
     cout << endl;    
