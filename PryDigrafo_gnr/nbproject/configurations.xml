@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>AnchuraConst.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
                    displayName="Resource Files"
@@ -12,8 +13,7 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>Grafo.h</itemPath>
-      <itemPath>GrafoItrAP_c.h</itemPath>
+      <itemPath>../PryDigrafo_gnr/Digrafo_gnr.h</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -37,13 +37,10 @@
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
       <compileType>
-        <ccTool>
-          <standard>8</standard>
-        </ccTool>
       </compileType>
-      <item path="Grafo.h" ex="false" tool="3" flavor2="0">
+      <item path="../PryDigrafo_gnr/Digrafo_gnr.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="GrafoItrAP_c.h" ex="false" tool="3" flavor2="0">
+      <item path="AnchuraConst.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -68,9 +65,9 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="Grafo.h" ex="false" tool="3" flavor2="0">
+      <item path="../PryDigrafo_gnr/Digrafo_gnr.h" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="GrafoItrAP_c.h" ex="false" tool="3" flavor2="0">
+      <item path="AnchuraConst.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
