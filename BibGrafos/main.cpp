@@ -48,7 +48,8 @@ int main(int argc, char** argv) {
     //aplicaPruebasRutasEntre(0,6);
     
     cout << "Ahora se aplican las pruebas sobre el iterador anchura-primero const" << endl;
-    Grafo< int > grf("grafoMuyPeq.txt");
+    Grafo< int > grf("grafoMuyPeqNoCnx.txt");
+    cout << "A hil: " << grf.aHil() << endl;
     int vO = 0;
     cout << "Digite vértice para iniciar recorrido anchura-primero: ";
     cin >> vO; cout << endl;

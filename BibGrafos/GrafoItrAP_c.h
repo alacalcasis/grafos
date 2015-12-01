@@ -50,6 +50,7 @@ private:
     void asgGrafo(Grafo< V >& g); // sólo para ser usado por Grafo< V >::begin(...)
     void asgOrigen(int vO); // sólo para ser usado por Grafo< V >::begin(...)
     void asgOrigenAlAzar(); // sólo para ser usado por Grafo< V >::begin(...)
+    void asgNvoOrigenDeFaltantesAlAzar(); // sólo para ser usado por operator++ para reiniciar recorrido
     void clear(); // limpia el itr_begin de Grafo< V >.
 
     Grafo< V >* g_ptr; // puntero al grafo que se va a recorrer
@@ -59,7 +60,7 @@ private:
 };
 
 template < typename V >
-GrafoItrAP_c< V >::GrafoItrAP_c() : g_ptr(0), fin(false) {
+GrafoItrAP_c< V >::GrafoItrAP_c() : g_ptr(0) {
 }
 
 template < typename V >
@@ -91,7 +92,7 @@ void GrafoItrAP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
     //se crea un vector con idVrt faltantes
     vector< int > faltantes;
     for (int i = 0; i < g_ptr->vecVrt.size(); ++i)
-        if (find(g_ptr->vecVrt.begin(), g_ptr->vecVrt.end(), i) == g_ptr->vecVrt.end())
+        if (find(marcados.begin(), marcados.end(), i) == marcados.end())
             faltantes.push_back(i);
     // se selecciona uno de los faltantes al azar
     int t = faltantes.size();
@@ -100,7 +101,7 @@ void GrafoItrAP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
     std::uniform_int_distribution<int> distribucion(0, t - 1);
     int inicio = distribucion(generador);
     // se reinicia el iterador a partir del vértices seleccionado al azar
-    cola.push_back(inicio);
+    cola.push_back(faltantes[inicio]);
 }
 
 template < typename V >
@@ -109,7 +110,6 @@ void GrafoItrAP_c< V >::clear() {
     while (!cola.empty())
         cola.pop_front();
     marcados.clear();
-    fin = false;
 }
 
 template < typename V >
@@ -142,14 +142,14 @@ GrafoItrAP_c< V >& GrafoItrAP_c< V >::operator++() {
                 int nuevo = *itr;
                 cola.push_back(*itr);
             }
-    } else if (marcados.size < g_ptr->vecVrt.size())
-        asgNvoOrigenDeFaltantesAlAzar();
-    else fin = true;
+        if ((cola.empty())&&(marcados.size() < g_ptr->vecVrt.size()))
+            asgNvoOrigenDeFaltantesAlAzar();
+    }
 }
 
 template < typename V >
 bool GrafoItrAP_c< V >::operator==(const GrafoItrAP_c& orig) {
-    return ( fin && orig.fin) || (cola == orig.cola);
+    return (cola == orig.cola);
 }
 
 template < typename V >
@@ -162,7 +162,6 @@ GrafoItrAP_c< V >& GrafoItrAP_c< V >::operator=(const GrafoItrAP_c& orig) {
     cola = orig.cola;
     g_ptr = orig.g_ptr;
     marcados = orig.marcados;
-    fin = orig.fin;
 }
 
 #endif	/* GRAFOITRAP_C_H */
