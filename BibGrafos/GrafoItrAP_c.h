@@ -78,12 +78,29 @@ void GrafoItrAP_c< V >::asgOrigen(int vO) {
 
 template < typename V >
 void GrafoItrAP_c< V >::asgOrigenAlAzar() {
-        int t = g_ptr->vecVrt.size();
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-        std::default_random_engine generador(seed);
-        std::uniform_int_distribution<int> distribucion(0, t - 1);
-        int inicio = distribucion(generador);
-        cola.push_back(inicio);
+    int t = g_ptr->vecVrt.size();
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generador(seed);
+    std::uniform_int_distribution<int> distribucion(0, t - 1);
+    int inicio = distribucion(generador);
+    cola.push_back(inicio);
+}
+
+template < typename V >
+void GrafoItrAP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
+    //se crea un vector con idVrt faltantes
+    vector< int > faltantes;
+    for (int i = 0; i < g_ptr->vecVrt.size(); ++i)
+        if (find(g_ptr->vecVrt.begin(), g_ptr->vecVrt.end(), i) == g_ptr->vecVrt.end())
+            faltantes.push_back(i);
+    // se selecciona uno de los faltantes al azar
+    int t = faltantes.size();
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::default_random_engine generador(seed);
+    std::uniform_int_distribution<int> distribucion(0, t - 1);
+    int inicio = distribucion(generador);
+    // se reinicia el iterador a partir del vértices seleccionado al azar
+    cola.push_back(inicio);
 }
 
 template < typename V >
@@ -121,12 +138,13 @@ GrafoItrAP_c< V >& GrafoItrAP_c< V >::operator++() {
         for (vector< int >::const_iterator itr = g_ptr->vecVrt.at(listo).ady.begin();
                 itr != g_ptr->vecVrt.at(listo).ady.end(); ++itr)
             if ((find(marcados.begin(), marcados.end(), *itr) == marcados.end()) &&
-                    (find(cola.begin(), cola.end(), *itr) == cola.end()))
-            {
+                    (find(cola.begin(), cola.end(), *itr) == cola.end())) {
                 int nuevo = *itr;
                 cola.push_back(*itr);
             }
-    } else fin = true;
+    } else if (marcados.size < g_ptr->vecVrt.size())
+        asgNvoOrigenDeFaltantesAlAzar();
+    else fin = true;
 }
 
 template < typename V >
