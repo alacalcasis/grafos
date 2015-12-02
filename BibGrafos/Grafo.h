@@ -23,8 +23,12 @@ template < typename V >
 class GrafoItrAP_c;
 
 template < typename V >
+class GrafoItrPP_c;
+
+template < typename V >
 class Grafo {
     friend class GrafoItrAP_c< V >;
+    friend class GrafoItrPP_c< V >;
     
     // Representa grafos con vértices de tipo V.
     // V debe tener el constructor de copias y la sobrecarga de operator=.
@@ -95,15 +99,25 @@ public:
     /* ITERADORES */
     
     typedef GrafoItrAP_c< V > const_iterator_ap;
+    typedef GrafoItrPP_c< V > const_iterator_pp;
     
     // EFE: construye un iterador anchura-primero constante que inicia su recorrido al azar.
-    const_iterator_ap& begin();
+    const_iterator_ap& beginAP();
     
     // EFE: construye un iterador anchura-primero constante que inicia su recorrido a partir de vO.
-    const_iterator_ap& begin(int vO);
+    const_iterator_ap& beginAP(int vO);
     
     // EFE: construye un iterador anchura-primero constante que apunta al final del recorrido.
-    const_iterator_ap& end();
+    const_iterator_ap& endAP();
+    
+        // EFE: construye un iterador anchura-primero constante que inicia su recorrido al azar.
+    const_iterator_pp& beginPP();
+    
+    // EFE: construye un iterador anchura-primero constante que inicia su recorrido a partir de vO.
+    const_iterator_pp& beginPP(int vO);
+    
+    // EFE: construye un iterador anchura-primero constante que apunta al final del recorrido.
+    const_iterator_pp& endPP();
     
 private:
 
@@ -133,6 +147,9 @@ private:
     static string vecAhil(vector<int> vecEnt);
     static GrafoItrAP_c< V > itr_begin;
     static GrafoItrAP_c< V > itr_end;
+    
+    static GrafoItrPP_c< V > itrPP_begin;
+    static GrafoItrPP_c< V > itrPP_end;
 };
 
 template < typename V >
@@ -146,6 +163,12 @@ GrafoItrAP_c< V > Grafo<V>::itr_begin;
 
 template < typename V >
 GrafoItrAP_c< V > Grafo<V>::itr_end;
+
+template < typename V >
+GrafoItrPP_c< V > Grafo<V>::itrPP_begin;
+
+template < typename V >
+GrafoItrPP_c< V > Grafo<V>::itrPP_end;
 
 template < typename V >
 Grafo<V>::Grafo(){
@@ -355,7 +378,7 @@ void Grafo<V>::asgDatoVrt(const V& nv, int ind_vrt) {
 /* ITERADORES */
 
 template < typename V >
-GrafoItrAP_c< V >& Grafo<V>::begin(){
+GrafoItrAP_c< V >& Grafo<V>::beginAP(){
     itr_begin.clear();
     itr_begin.asgGrafo(*this);
     itr_begin.asgOrigenAlAzar();
@@ -363,7 +386,7 @@ GrafoItrAP_c< V >& Grafo<V>::begin(){
 }
 
 template < typename V >
-GrafoItrAP_c< V >& Grafo<V>::begin(int vO){
+GrafoItrAP_c< V >& Grafo<V>::beginAP(int vO){
     itr_begin.clear();
     itr_begin.asgGrafo(*this);
     itr_begin.asgOrigen(vO);
@@ -371,9 +394,29 @@ GrafoItrAP_c< V >& Grafo<V>::begin(int vO){
 }
 
 template < typename V >
-GrafoItrAP_c< V >& Grafo<V>::end(){
-    itr_end.fin = true;
+GrafoItrAP_c< V >& Grafo<V>::endAP(){
     return itr_end;
+}
+
+template < typename V >
+GrafoItrPP_c< V >& Grafo<V>::beginPP(){
+    itrPP_begin.clear();
+    itrPP_begin.asgGrafo(*this);
+    itrPP_begin.asgOrigenAlAzar();
+    return itrPP_begin;
+}
+
+template < typename V >
+GrafoItrPP_c< V >& Grafo<V>::beginPP(int vO){
+    itrPP_begin.clear();
+    itrPP_begin.asgGrafo(*this);
+    itrPP_begin.asgOrigen(vO);
+    return itrPP_begin;
+}
+
+template < typename V >
+GrafoItrPP_c< V >& Grafo<V>::endPP(){
+    return itrPP_end;
 }
 
 /* misceláneos: */

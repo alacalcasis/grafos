@@ -1,12 +1,12 @@
 /* 
- * File:   GrafoItrAP_c.h
+ * File:   GrafoItrPP_c.h
  * Author: alan.calderon
  *
  * Created on 18 de noviembre de 2015, 12:10 PM
  */
 
-#ifndef GRAFOITRAP_C_H
-#define	GRAFOITRAP_C_H
+#ifndef GrafoItrPP_c_H
+#define	GrafoItrPP_c_H
 
 #include <deque>
 #include <random>
@@ -18,34 +18,34 @@ using namespace std;
 #include "Grafo.h"
 
 template < typename V >
-class GrafoItrAP_c {
+class GrafoItrPP_c {
 public:
-    // Representa un iterador constante anchura-primero sobre un Grafo.
+    // Representa un iterador constante profundidad-primero sobre un Grafo.
 
     friend class Grafo< V >;
-    GrafoItrAP_c(const GrafoItrAP_c< V >& orig);
-    virtual ~GrafoItrAP_c();
+    GrafoItrPP_c(const GrafoItrPP_c< V >& orig);
+    virtual ~GrafoItrPP_c();
 
     /* OPERADORES */
     const V* operator->();
     const V& operator*();
-    GrafoItrAP_c< V >& operator++();
-    bool operator==(const GrafoItrAP_c< V >& orig);
-    bool operator!=(const GrafoItrAP_c< V >& orig);
-    GrafoItrAP_c< V >& operator=(const GrafoItrAP_c< V >& orig);
+    GrafoItrPP_c< V >& operator++();
+    bool operator==(const GrafoItrPP_c< V >& orig);
+    bool operator!=(const GrafoItrPP_c< V >& orig);
+    GrafoItrPP_c< V >& operator=(const GrafoItrPP_c< V >& orig);
 
 private:
 
-    // EFE: construye un iterador anchura-primero constante para luego asociarlo
+    // EFE: construye un iterador profundidad-primero constante para luego asociarlo
     //      mediante el begin que sólo puede ser invocado por métodos de Grafo < V >.
-    GrafoItrAP_c();
+    GrafoItrPP_c();
 
-    // EFE: construye un iterador anchura-primero constante para recorrer g a 
+    // EFE: construye un iterador profundidad-primero constante para recorrer g a 
     //      de un vértice escogido al azar.
-    GrafoItrAP_c(const Grafo< V >& g);
+    GrafoItrPP_c(const Grafo< V >& g);
 
-    // EFE: construye un iterador anchura-primero constante para recorrer g a de vO.
-    GrafoItrAP_c(const Grafo< V >& g, int vO);
+    // EFE: construye un iterador profundidad-primero constante para recorrer g a de vO.
+    GrafoItrPP_c(const Grafo< V >& g, int vO);
 
     void asgGrafo(Grafo< V >& g); // sólo para ser usado por Grafo< V >::begin(...)
     void asgOrigen(int vO); // sólo para ser usado por Grafo< V >::begin(...)
@@ -54,40 +54,40 @@ private:
     void clear(); // limpia el itr_begin de Grafo< V >.
 
     Grafo< V >* g_ptr; // puntero al grafo que se va a recorrer
-    deque< int > cola; // para el recorrido anchura-primero del grafo
+    deque< int > pila; // para el recorrido profundidad-primero del grafo
     vector< int > marcados; // para evitar recorrer dos veces el mismo vértice
 };
 
 template < typename V >
-GrafoItrAP_c< V >::GrafoItrAP_c() : g_ptr(0) {
+GrafoItrPP_c< V >::GrafoItrPP_c() : g_ptr(0) {
 }
 
 template < typename V >
-GrafoItrAP_c< V >::GrafoItrAP_c(const GrafoItrAP_c& orig) : g_ptr(orig.g_ptr), cola(orig.cola), marcados(orig.marcados) {
+GrafoItrPP_c< V >::GrafoItrPP_c(const GrafoItrPP_c& orig) : g_ptr(orig.g_ptr), pila(orig.pila), marcados(orig.marcados) {
 }
 
 template < typename V >
-void GrafoItrAP_c< V >::asgGrafo(Grafo< V >& g) {
+void GrafoItrPP_c< V >::asgGrafo(Grafo< V >& g) {
     g_ptr = &g;
 }
 
 template < typename V >
-void GrafoItrAP_c< V >::asgOrigen(int vO) {
-    cola.push_back(vO);
+void GrafoItrPP_c< V >::asgOrigen(int vO) {
+    pila.push_front(vO);
 }
 
 template < typename V >
-void GrafoItrAP_c< V >::asgOrigenAlAzar() {
+void GrafoItrPP_c< V >::asgOrigenAlAzar() {
     int t = g_ptr->vecVrt.size();
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generador(seed);
     std::uniform_int_distribution<int> distribucion(0, t - 1);
     int inicio = distribucion(generador);
-    cola.push_back(inicio);
+    pila.push_front(inicio);
 }
 
 template < typename V >
-void GrafoItrAP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
+void GrafoItrPP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
     //se crea un vector con idVrt faltantes
     vector< int > faltantes;
     for (int i = 0; i < g_ptr->vecVrt.size(); ++i)
@@ -100,68 +100,73 @@ void GrafoItrAP_c< V >::asgNvoOrigenDeFaltantesAlAzar() {
     std::uniform_int_distribution<int> distribucion(0, t - 1);
     int inicio = distribucion(generador);
     // se reinicia el iterador a partir del vértices seleccionado al azar
-    cola.push_back(faltantes[inicio]);
+    pila.push_front(faltantes[inicio]);
 }
 
 template < typename V >
-void GrafoItrAP_c< V >::clear() {
+void GrafoItrPP_c< V >::clear() {
     g_ptr = 0;
-    while (!cola.empty())
-        cola.pop_front();
+    while (!pila.empty())
+        pila.pop_front();
     marcados.clear();
 }
 
 template < typename V >
-GrafoItrAP_c< V >::~GrafoItrAP_c() {
+GrafoItrPP_c< V >::~GrafoItrPP_c() {
 }
 
 /* OPERADORES */
 
 template < typename V >
-const V* GrafoItrAP_c< V >::operator->() {
-    return &cola.front();
+const V* GrafoItrPP_c< V >::operator->() {
+    return &pila.front();
 }
 
 template < typename V >
-const V& GrafoItrAP_c< V >::operator*() {
-    return cola.front();
+const V& GrafoItrPP_c< V >::operator*() {
+    return pila.front();
 }
 
 template < typename V >
-GrafoItrAP_c< V >& GrafoItrAP_c< V >::operator++() {
-    if (!cola.empty()) {
+GrafoItrPP_c< V >& GrafoItrPP_c< V >::operator++() {
+    if (!pila.empty()) {
         int listo;
-        listo = cola.front();
-        cola.pop_front();
-        marcados.push_back(listo);
+        listo = pila.front();
+        while (!pila.empty()&&find(marcados.begin(), marcados.end(), listo) != marcados.end()) {
+            pila.pop_front();
+            listo = pila.front();
+        };
+        if (find(marcados.begin(), marcados.end(), listo) == marcados.end())
+            marcados.push_back(listo);
         for (vector< int >::const_iterator itr = g_ptr->vecVrt.at(listo).ady.begin();
                 itr != g_ptr->vecVrt.at(listo).ady.end(); ++itr)
-            if ((find(marcados.begin(), marcados.end(), *itr) == marcados.end()) &&
-                    (find(cola.begin(), cola.end(), *itr) == cola.end())) {
+            /*if ((find(marcados.begin(), marcados.end(), *itr) == marcados.end()) &&
+                    (find(pila.begin(), pila.end(), *itr) == pila.end()))*/
+            if (find(marcados.begin(), marcados.end(), *itr) == marcados.end()) {
                 int nuevo = *itr;
-                cola.push_back(*itr);
+                pila.push_front(*itr);
             }
-        if ((cola.empty())&&(marcados.size() < g_ptr->vecVrt.size()))
+        if ((pila.empty())&&(marcados.size() < g_ptr->vecVrt.size()))
             asgNvoOrigenDeFaltantesAlAzar();
     }
 }
 
 template < typename V >
-bool GrafoItrAP_c< V >::operator==(const GrafoItrAP_c& orig) {
-    return (cola == orig.cola);
+bool GrafoItrPP_c< V >::operator==(const GrafoItrPP_c& orig) {
+    return (pila == orig.pila);
 }
 
 template < typename V >
-bool GrafoItrAP_c< V >::operator!=(const GrafoItrAP_c& orig) {
+bool GrafoItrPP_c< V >::operator!=(const GrafoItrPP_c& orig) {
     return !(*this == orig);
 }
 
 template < typename V >
-GrafoItrAP_c< V >& GrafoItrAP_c< V >::operator=(const GrafoItrAP_c& orig) {
-    cola = orig.cola;
+GrafoItrPP_c< V >& GrafoItrPP_c< V >::operator=(const GrafoItrPP_c& orig) {
+    pila = orig.pila;
     g_ptr = orig.g_ptr;
     marcados = orig.marcados;
 }
 
-#endif	/* GRAFOITRAP_C_H */
+#endif	/* GrafoItrPP_c_H */
 

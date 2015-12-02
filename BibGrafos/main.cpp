@@ -12,6 +12,7 @@ using namespace std;
 
 #include "Grafo.h"
 #include "GrafoItrAP_c.h"
+#include "GrafoItrPP_.h"
 
 void aplicaPruebasRutasEntre(int o, int d) {
     string prefijo = "grafoRutasEntre";
@@ -54,14 +55,28 @@ int main(int argc, char** argv) {
     cout << "Digite vértice para iniciar recorrido anchura-primero: ";
     cin >> vO; cout << endl;
     cout << "A continuación un recorrido anchura-primero desde: " << vO << endl;
-    for (Grafo< int >::const_iterator_ap itr = grf.begin(vO);
-            itr != grf.end(); ++itr)
+    for (Grafo< int >::const_iterator_ap itr = grf.beginAP(vO);
+            itr != grf.endAP(); ++itr)
         cout << *itr << ',';
     cout << endl;
     
     cout << "A continuación un recorrido anchura-primero con inicio al azar" << endl;
-    for (Grafo< int >::const_iterator_ap itr = grf.begin();
-            itr != grf.end(); ++itr)
+    for (Grafo< int >::const_iterator_ap itr = grf.beginAP();
+            itr != grf.endAP(); ++itr)
+        cout << *itr << ',';
+    cout << endl;
+    
+    cout << "Digite vértice para iniciar recorrido profundidad-primero: ";
+    cin >> vO; cout << endl;
+    cout << "A continuación un recorrido profundidad-primero desde: " << vO << endl;
+    for (Grafo< int >::const_iterator_pp itr = grf.beginPP(vO);
+            itr != grf.endPP(); ++itr)
+        cout << *itr << ',';
+    cout << endl;
+    
+    cout << "A continuación un recorrido profundidad-primero con inicio al azar" << endl;
+    for (Grafo< int >::const_iterator_pp itr = grf.beginPP();
+            itr != grf.endPP(); ++itr)
         cout << *itr << ',';
     cout << endl;    
     return 0;
