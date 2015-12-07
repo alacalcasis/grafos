@@ -132,22 +132,21 @@ GrafoItrPP_c< V >& GrafoItrPP_c< V >::operator++() {
     if (!pila.empty()) {
         int listo;
         listo = pila.front();
-        while (!pila.empty()&&find(marcados.begin(), marcados.end(), listo) != marcados.end()) {
-            pila.pop_front();
-            listo = pila.front();
-        };
-        if (find(marcados.begin(), marcados.end(), listo) == marcados.end())
+        pila.pop_front();
+        if (find(marcados.begin(), marcados.end(), listo) == marcados.end()) {
             marcados.push_back(listo);
-        for (vector< int >::const_iterator itr = g_ptr->vecVrt.at(listo).ady.begin();
-                itr != g_ptr->vecVrt.at(listo).ady.end(); ++itr)
-            /*if ((find(marcados.begin(), marcados.end(), *itr) == marcados.end()) &&
-                    (find(pila.begin(), pila.end(), *itr) == pila.end()))*/
-            if (find(marcados.begin(), marcados.end(), *itr) == marcados.end()) {
-                int nuevo = *itr;
-                pila.push_front(*itr);
-            }
+            for (vector< int >::const_iterator itr = g_ptr->vecVrt.at(listo).ady.begin();
+                    itr != g_ptr->vecVrt.at(listo).ady.end(); ++itr)
+                if (find(marcados.begin(), marcados.end(), *itr) == marcados.end()) {
+                    int nuevo = *itr;
+                    pila.push_front(*itr);
+                }
+        }
+        while (!pila.empty() && find(marcados.begin(), marcados.end(), pila.front()) != marcados.end()) {
+            pila.pop_front();
+        };        
         if ((pila.empty())&&(marcados.size() < g_ptr->vecVrt.size()))
-            asgNvoOrigenDeFaltantesAlAzar();
+            asgNvoOrigenDeFaltantesAlAzar();        
     }
 }
 
